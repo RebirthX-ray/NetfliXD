@@ -1,27 +1,56 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if a file was uploaded without errors
-    if (isset($_FILES["movieFile"]) && $_FILES["movieFile"]["error"] == UPLOAD_ERR_OK) {
-        $allowedExtensions = ["mp4", "mov"]; // Specify the allowed file extensions
-        $tempFilePath = $_FILES["movieFile"]["tmp_name"];
-        $fileName = $_FILES["movieFile"]["name"];
-        $fileExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-        $destination = "uploads/" . uniqid() . "." . $fileExtension;
+$password = "admin123"; // Change this to your desired admin password
 
-        // Check if the file extension is allowed
-        if (in_array($fileExtension, $allowedExtensions)) {
-            // Move the uploaded file to the desired location
+// Check if the user submitted the password form
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["password"])) {
+    $enteredPassword = $_POST["password"];
+
+    // Verify the entered password
+    if ($enteredPassword == $password) {
+        // Password is correct, handle the file upload
+        if (isset($_FILES["videoFile"]) && $_FILES["videoFile"]["error"] == UPLOAD_ERR_OK) {
+            $tempFilePath = $_FILES["videoFile"]["tmp_name"];
+            $fileName = $_FILES["videoFile"]["name"];
+            $destination = "uploads/" . $fileName;
+
             if (move_uploaded_file($tempFilePath, $destination)) {
-                echo "File uploaded successfully!";
+                echo "Video uploaded successfully!";
             } else {
-                echo "Error uploading file.";
+                echo "Error uploading video.";
             }
         } else {
-            echo "Error: Invalid file extension. Only MP4 and MOV files are allowed.";
+            echo "Error: Please select a video file.";
         }
     } else {
-        echo "Error: Please select a movie file.";
+        echo "Error: Incorrect password.";
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Admin Login</h1>
+  </header>
+
+  <main>
+    <form action="upload.php" method="post">
+      <label for="password">Password:</label>
+      <input type="password" name="password">
+      <input type="submit" value="Login">
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Video Upload</p>
+  </footer>
+</body>
+</html>
+
 
